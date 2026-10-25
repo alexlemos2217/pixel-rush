@@ -1,30 +1,28 @@
 <div align="center">
 
-<img src="favicon.svg" width="72" alt="Pixel Rush" />
+<img src="favicon.svg" width="80" alt="Pixel Rush — Neon Runner" />
 
 # ⚡ PIXEL RUSH
 
-### NEON RUNNER
+### NEON RUNNER · ARCADE EDITION
 
 **CORRÉ. SALTÁ. ROMPÉ TU RÉCORD.**
 
-Un endless runner de estética neón, desarrollado desde cero con tecnologías web.  
-Superá obstáculos, recolectá monedas y competí contra tu propia mejor marca.
+Un *endless runner* arcade con estética futurista, desarrollado con tecnologías web nativas.  
+Esquivá obstáculos, recolectá monedas, usá potenciadores y superá tu mejor marca.
 
 <p>
   <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5" />
   <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css&logoColor=white" alt="CSS3" />
   <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=101010" alt="JavaScript" />
-  <img src="https://img.shields.io/badge/Canvas_2D-151D32?style=for-the-badge&logo=html5&logoColor=white" alt="Canvas 2D" />
+  <img src="https://img.shields.io/badge/Canvas%202D-151D32?style=for-the-badge&logo=html5&logoColor=white" alt="Canvas 2D" />
 </p>
 
-[**🎮 JUGAR ONLINE**](https://mariogame-alex.netlify.app/) · [**💻 VER REPOSITORIO**](https://github.com/alexlemos2217/Mario-minigame)
+### [🎮 JUGAR ONLINE](https://pixel-rush-alex.netlify.app/) · [💻 VER CÓDIGO](https://github.com/alexlemos2217/pixel-rush)
 
-<br />
+<img src="docs/preview.webp" alt="Captura de Pixel Rush durante una partida" width="100%" />
 
-<img src="docs/preview.webp" alt="Vista del juego Pixel Rush Neon Runner en funcionamiento" width="100%" />
-
-<sub>Captura de la versión renovada · El enlace de Netlify mostrará esta versión una vez realizado el nuevo deploy.</sub>
+<sub>Vista del juego · Disponible para computadora, tablet y celular.</sub>
 
 </div>
 
@@ -32,123 +30,121 @@ Superá obstáculos, recolectá monedas y competí contra tu propia mejor marca.
 
 ## 🚀 Sobre el proyecto
 
-**Pixel Rush — Neon Runner** es la evolución de mi primer minijuego web, originalmente inspirado en un ejercicio de *Mario-minigame*. Lo transformé en una experiencia arcade con una identidad visual propia, nuevas mecánicas y una interfaz adaptable a diferentes pantallas.
+**Pixel Rush — Neon Runner** es un videojuego web de tipo *endless runner* que nació como una práctica de desarrollo frontend y fue evolucionando hasta convertirse en una experiencia arcade con identidad visual propia.
 
-El objetivo es simple: **llegar lo más lejos posible** mientras la velocidad aumenta. Pero dominar el doble salto, anticipar obstáculos y aprovechar los potenciadores requiere práctica.
+El desafío es avanzar por una ciudad de neón mientras aumenta la velocidad. Para sobrevivir, tenés que **calcular los saltos, deslizarte bajo los obstáculos, conseguir monedas y aprovechar los escudos**.
 
-Este proyecto forma parte de mi portfolio de desarrollo y explora conceptos de **lógica de videojuegos, animación, física, eventos, experiencia de usuario y persistencia en el navegador**.
+Este proyecto es parte de mi portfolio y pone en práctica conceptos de **lógica de videojuegos, animación, física básica, detección de colisiones, manejo de eventos, diseño responsive y persistencia local**.
 
-## ✨ Características principales
+## ✨ Características
 
-| 🎯 Jugabilidad | 🌆 Experiencia visual | 🏆 Progreso |
+| 🎮 Jugabilidad | 🌃 Diseño y experiencia | 🏆 Progreso |
 |---|---|---|
-| Salto y doble salto | Ciudad futurista y efecto parallax | Puntuación en tiempo real |
-| Deslizamiento bajo obstáculos | Distritos con distintas atmósferas | Récord personal |
-| Monedas y escudos | Partículas y animaciones | Ranking local de mejores partidas |
-| Obstáculos y velocidad progresiva | Sonido sintetizado en el navegador | Tres niveles de dificultad |
+| Salto y doble salto | Escenarios futuristas con parallax | Puntaje en tiempo real |
+| Deslizamiento | Distritos con distintas atmósferas | Récord personal |
+| Monedas y escudos | Animaciones y partículas | Top 3 de partidas locales |
+| Obstáculos y velocidad progresiva | Efectos de sonido generados con Web Audio | Tres modos de dificultad |
 
-Además, incluye **pausa y reanudación**, tutorial integrado, reinicio de partida, controles táctiles y pausa automática al cambiar de pestaña.
+Además, incluye **tutorial integrado, pausa y reanudación, reinicio de partida, controles para pantallas táctiles y pausa automática cuando cambiás de pestaña**.
 
-## 🕹️ Elegí cómo jugar
+## 🕹️ Modos de juego
 
-| Modo | Experiencia | Vidas iniciales |
-|---|---|:---:|
-| ☁️ **ZEN** | Ritmo más tranquilo, ideal para practicar | 4 |
-| ✦ **ARCADE** | Experiencia equilibrada y progresiva | 3 |
-| ⚡ **TURBO** | Más velocidad y mayor desafío | 2 |
+| Modo | Estilo | Vidas iniciales |
+|:---|:---|:---:|
+| ☁️ **ZEN** | Más tranquilo, para practicar | 4 |
+| ✦ **ARCADE** | Equilibrado y progresivo | 3 |
+| ⚡ **TURBO** | Más rápido y exigente | 2 |
 
-## 🎮 Controles
+## ⌨️ Controles
 
 | Acción | Computadora | Celular / tablet |
 |---|---|---|
-| **Saltar / doble salto** | `Espacio`, `↑` o `W` | Botón **SALTAR** o toque en el juego |
-| **Deslizarse** | `↓` o `S` | Mantener **DESLIZAR** |
-| **Pausar / continuar** | `P` o `Esc` | Botón de pausa |
-| **Activar / silenciar sonido** | `M` | Botón de sonido |
-| **Iniciar / reintentar** | `Enter` o botón de inicio | Botón en pantalla |
+| Saltar / doble salto | `Espacio`, `↑` o `W` | **SALTAR** o tocar el juego |
+| Deslizarse | `↓` o `S` | Mantener **DESLIZAR** |
+| Pausar / reanudar | `P` o `Esc` | Botón de pausa |
+| Activar / silenciar audio | `M` | Botón de sonido |
+| Iniciar / reintentar | `Enter` o botón principal | Botón en pantalla |
 
-> **Tip:** recolectá monedas para sumar puntos extra. Un escudo puede absorber un impacto y ayudarte a continuar.
+> 💡 **Consejo:** juntá monedas para sumar puntos adicionales y buscá escudos para protegerte de un impacto.
 
-## 🧰 Stack tecnológico
+## 🧰 Tecnologías
 
-- **HTML5:** estructura semántica del sitio e interfaz del juego.
-- **CSS3:** diseño responsive, estética neón, componentes y animaciones.
-- **JavaScript (Vanilla):** estado del juego, controles, física, colisiones y puntuación.
-- **Canvas 2D:** renderizado del personaje, escenarios y efectos.
-- **Web Audio API:** generación de efectos de sonido sin archivos de audio externos.
-- **localStorage:** conservación del récord y las mejores partidas en el navegador.
+- **HTML5:** estructura de la interfaz y elementos accesibles.
+- **CSS3:** diseño adaptable, componentes, transiciones y estética neón.
+- **JavaScript (Vanilla):** lógica del juego, entradas de teclado/táctiles, puntuación y estados.
+- **Canvas 2D:** representación del personaje, fondos, obstáculos y efectos.
+- **Web Audio API:** efectos de sonido sintetizados en el navegador.
+- **localStorage:** récords y ranking local sin cuentas ni servidor.
 
-**Sin frameworks, sin librerías externas y sin backend.**
+**Sin frameworks, dependencias externas, backend ni proceso de compilación.**
 
 ## 💻 Ejecutarlo localmente
 
-1. Cloná el repositorio:
+Cloná el repositorio:
 
-   ```bash
-   git clone https://github.com/alexlemos2217/Mario-minigame.git
-   ```
-
-2. Entrá a la carpeta del proyecto:
-
-   ```bash
-   cd Mario-minigame
-   ```
-
-3. Abrí **`index.html`** en un navegador moderno.
-
-No necesitás instalar dependencias ni ejecutar un servidor para jugar.
-
-## ☁️ Deploy en Netlify
-
-El juego es un **sitio estático**, por lo que puede publicarse directamente desde GitHub:
-
-1. Conectá este repositorio con un proyecto en Netlify.
-2. Seleccioná la rama `main`.
-3. Dejá vacío el comando de compilación (*Build command*).
-4. Configurá el directorio de publicación (*Publish directory*) como `.` (raíz del repositorio).
-5. Publicá el sitio. Los siguientes cambios en `main` se desplegarán automáticamente.
-
-**Demo:** [mariogame-alex.netlify.app](https://mariogame-alex.netlify.app/)
-
-## 📁 Estructura del proyecto
-
-```text
-Mario-minigame/
-├── index.html         # Interfaz y elementos del juego
-├── styles.css         # Estilos y diseño responsive
-├── index.js           # Motor, controles, física y renderizado
-├── favicon.svg        # Identidad del juego
-├── docs/
-│   └── preview.webp   # Captura para este README
-└── README.md          # Documentación del proyecto
+```bash
+git clone https://github.com/alexlemos2217/pixel-rush.git
+cd pixel-rush
 ```
 
-> Las carpetas `img/` y `audio/` de la primera versión ya no son necesarias para Pixel Rush. Podés conservarlas como referencia histórica o quitarlas en otro commit.
+Abrí **`index.html`** en un navegador moderno. No hace falta instalar paquetes ni levantar un servidor.
+
+## ☁️ Publicación en Netlify
+
+El proyecto se publica como **sitio estático conectado con GitHub**.
+
+- **Repositorio:** [`alexlemos2217/pixel-rush`](https://github.com/alexlemos2217/pixel-rush)
+- **Rama de publicación:** `main`
+- **Build command:** ninguno
+- **Publish directory:** `.` (raíz del repositorio)
+- **Sitio:** [pixel-rush-alex.netlify.app](https://pixel-rush-alex.netlify.app/)
+
+Los cambios confirmados en la rama de publicación pueden desplegarse automáticamente mediante la integración de Netlify con GitHub.
+
+## 📁 Estructura
+
+```text
+pixel-rush/
+├── index.html        # Interfaz y estructura del juego
+├── styles.css        # Diseño y estilos responsive
+├── index.js          # Jugabilidad, animación, físicas y controles
+├── favicon.svg       # Identidad visual
+├── docs/
+│   └── preview.webp  # Captura utilizada en este README
+└── README.md         # Documentación
+```
+
+> Si todavía aparecen las carpetas `img/` y `audio/` de una versión anterior, no son necesarias para el juego actual y pueden retirarse después de confirmar que ningún archivo las utiliza.
 
 ## 🧠 Aspectos técnicos destacados
 
-- Bucle de actualización con `requestAnimationFrame` y movimiento basado en `deltaTime`.
-- Detección de colisiones mediante cajas rectangulares (**AABB**).
-- Generación dinámica de obstáculos, monedas, escudos y partículas.
-- Ajuste del dibujo del Canvas al espacio disponible en distintas pantallas.
-- Guardado local de puntuaciones, sin requerir cuentas ni conexión a un servidor.
+- **Game loop** con `requestAnimationFrame` y actualización basada en tiempo transcurrido (*delta time*).
+- **Colisiones AABB** mediante cajas rectangulares.
+- **Generación dinámica** de obstáculos, monedas, escudos y partículas.
+- **Ajuste responsive del Canvas** para distintos tamaños de pantalla.
+- **Progresión de dificultad** con velocidad creciente.
+- **Persistencia local** de mejores puntuaciones y preferencia de sonido.
 
-## 🛣️ Posibles mejoras futuras
+## 🛠️ Próximas ideas
 
-- [ ] Desafíos diarios y logros desbloqueables.
-- [ ] Nuevos potenciadores, obstáculos y animaciones.
-- [ ] Personalización del personaje y sus colores.
+- [ ] Nuevos escenarios, obstáculos y potenciadores.
+- [ ] Logros y desafíos especiales.
+- [ ] Personalización del personaje.
 - [ ] Ranking online opcional con backend.
 
-Estas funcionalidades son ideas para futuras versiones y **no están implementadas actualmente**.
+*Estas funciones son propuestas para futuras versiones y todavía no están implementadas.*
 
 ---
 
 <div align="center">
 
 **Desarrollado por [Alexander Lemos](https://github.com/alexlemos2217)**  
-Un proyecto personal de aprendizaje y desarrollo web.
+Proyecto personal de desarrollo web y videojuegos.
 
-<sub>El minijuego inicial se realizó como práctica a partir de material de Manual do Dev. Esta evolución usa una identidad visual y recursos propios, sin personajes ni gráficos de Nintendo.</sub>
+<sub>La práctica original se inspiró en material educativo de Manual do Dev. Esta versión presenta una identidad visual y una implementación propias.</sub>
+
+<br />
+
+**[⚡ JUGAR PIXEL RUSH](https://pixel-rush-alex.netlify.app/)**
 
 </div>
