@@ -1,150 +1,119 @@
 <div align="center">
 
-<img src="favicon.svg" width="80" alt="Pixel Rush — Neon Runner" />
+<img src="favicon.svg" width="76" alt="Pixel Rush logo" />
 
-# ⚡ PIXEL RUSH
+# PIXEL RUSH
 
-### NEON RUNNER · ARCADE EDITION
+### ULTIMATE REMASTER · NEON RUNNER
 
-**CORRÉ. SALTÁ. ROMPÉ TU RÉCORD.**
+**Run. Jump. Build the combo. Break your record.**
 
-Un *endless runner* arcade con estética futurista, desarrollado con tecnologías web nativas.  
-Esquivá obstáculos, recolectá monedas, usá potenciadores y superá tu mejor marca.
+An original, dependency-free arcade runner built with Canvas 2D, Web Audio and modern browser APIs.
 
-<p>
-  <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5" />
-  <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css&logoColor=white" alt="CSS3" />
-  <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=101010" alt="JavaScript" />
-  <img src="https://img.shields.io/badge/Canvas%202D-151D32?style=for-the-badge&logo=html5&logoColor=white" alt="Canvas 2D" />
-</p>
-
-### [🎮 JUGAR ONLINE](https://pixel-rush-alex.netlify.app/) · [💻 VER CÓDIGO](https://github.com/alexlemos2217/pixel-rush)
-
-<img src="docs/preview.webp" alt="Captura de Pixel Rush durante una partida" width="100%" />
-
-<sub>Vista del juego · Disponible para computadora, tablet y celular.</sub>
+[Play the current public build](https://pixel-rush-alex.netlify.app/) · [Alexander Lemos on GitHub](https://github.com/alexlemos2217)
 
 </div>
 
----
+## The game
 
-## 🚀 Sobre el proyecto
+Pixel Rush is a fast browser arcade game set across the districts of Neon City. The objective is simple: survive for as long as possible, read each hazard, collect energy coins and keep a skill combo alive.
 
-**Pixel Rush — Neon Runner** es un videojuego web de tipo *endless runner* que nació como una práctica de desarrollo frontend y fue evolucionando hasta convertirse en una experiencia arcade con identidad visual propia.
+The remaster keeps the immediate controls of the original while adding a fairer fixed-step simulation, progression, accessibility settings and a more expressive scoring system. There are no accounts, paid services or remote gameplay dependencies.
 
-El desafío es avanzar por una ciudad de neón mientras aumenta la velocidad. Para sobrevivir, tenés que **calcular los saltos, deslizarte bajo los obstáculos, conseguir monedas y aprovechar los escudos**.
+## Features
 
-Este proyecto es parte de mi portfolio y pone en práctica conceptos de **lógica de videojuegos, animación, física básica, detección de colisiones, manejo de eventos, diseño responsive y persistencia local**.
+- Responsive endless-runner gameplay for keyboard, mouse and touch.
+- Jump, double jump, variable jump release and ground slide.
+- Fixed 120 Hz simulation with frame-rate-independent rendering.
+- Forgiving hitboxes, jump buffering and coyote-time support.
+- Crates, spikes and moving drones with progressive spawn pacing.
+- Four rotating visual districts with procedural parallax scenery.
+- Score from distance, coins, clean obstacle passes and combos up to ×5.
+- Three difficulty modes: Zen, Arcade and Turbo.
+- Shields, particles, camera impact and synthesized sound feedback.
+- Pause, instant retry, main-menu return and automatic focus-loss pause.
+- Local best scores, career statistics and five real achievements.
+- Persistent volume, mute and reduced-effects preferences.
+- No framework, game engine, backend or third-party runtime asset.
 
-## ✨ Características
+## Controls
 
-| 🎮 Jugabilidad | 🌃 Diseño y experiencia | 🏆 Progreso |
-|---|---|---|
-| Salto y doble salto | Escenarios futuristas con parallax | Puntaje en tiempo real |
-| Deslizamiento | Distritos con distintas atmósferas | Récord personal |
-| Monedas y escudos | Animaciones y partículas | Top 3 de partidas locales |
-| Obstáculos y velocidad progresiva | Efectos de sonido generados con Web Audio | Tres modos de dificultad |
+| Action | Keyboard | Touch / pointer |
+| --- | --- | --- |
+| Start / retry | `Enter` or `Space` | Main action button |
+| Jump / double jump | `Space`, `↑` or `W` | Tap the game or **Jump** |
+| Short jump | Release the jump key early | — |
+| Slide | Hold `↓` or `S` | Hold **Slide** |
+| Pause / resume | `P` or `Esc` | Pause button |
+| Mute / unmute | `M` | Audio button |
 
-Además, incluye **tutorial integrado, pausa y reanudación, reinicio de partida, controles para pantallas táctiles y pausa automática cuando cambiás de pestaña**.
+The game pauses automatically when the tab loses focus, so background time cannot cause an unfair hit.
 
-## 🕹️ Modos de juego
+## Scoring and progression
 
-| Modo | Estilo | Vidas iniciales |
-|:---|:---|:---:|
-| ☁️ **ZEN** | Más tranquilo, para practicar | 4 |
-| ✦ **ARCADE** | Equilibrado y progresivo | 3 |
-| ⚡ **TURBO** | Más rápido y exigente | 2 |
+Distance continuously adds score. Coins and clean obstacle passes extend the combo window; every three actions increase the multiplier, up to ×5. Taking an unshielded hit breaks the combo.
 
-## ⌨️ Controles
+The browser stores the best score, top runs, career totals, achievements and accessibility preferences. Versioned save data automatically imports the previous Pixel Rush local record when available. Invalid or unavailable storage never prevents a session from running.
 
-| Acción | Computadora | Celular / tablet |
-|---|---|---|
-| Saltar / doble salto | `Espacio`, `↑` o `W` | **SALTAR** o tocar el juego |
-| Deslizarse | `↓` o `S` | Mantener **DESLIZAR** |
-| Pausar / reanudar | `P` o `Esc` | Botón de pausa |
-| Activar / silenciar audio | `M` | Botón de sonido |
-| Iniciar / reintentar | `Enter` o botón principal | Botón en pantalla |
-
-> 💡 **Consejo:** juntá monedas para sumar puntos adicionales y buscá escudos para protegerte de un impacto.
-
-## 🧰 Tecnologías
-
-- **HTML5:** estructura de la interfaz y elementos accesibles.
-- **CSS3:** diseño adaptable, componentes, transiciones y estética neón.
-- **JavaScript (Vanilla):** lógica del juego, entradas de teclado/táctiles, puntuación y estados.
-- **Canvas 2D:** representación del personaje, fondos, obstáculos y efectos.
-- **Web Audio API:** efectos de sonido sintetizados en el navegador.
-- **localStorage:** récords y ranking local sin cuentas ni servidor.
-
-**Sin frameworks, dependencias externas, backend ni proceso de compilación.**
-
-## 💻 Ejecutarlo localmente
-
-Cloná el repositorio:
-
-```bash
-git clone https://github.com/alexlemos2217/pixel-rush.git
-cd pixel-rush
-```
-
-Abrí **`index.html`** en un navegador moderno. No hace falta instalar paquetes ni levantar un servidor.
-
-## ☁️ Publicación en Netlify
-
-El proyecto se publica como **sitio estático conectado con GitHub**.
-
-- **Repositorio:** [`alexlemos2217/pixel-rush`](https://github.com/alexlemos2217/pixel-rush)
-- **Rama de publicación:** `main`
-- **Build command:** ninguno
-- **Publish directory:** `.` (raíz del repositorio)
-- **Sitio:** [pixel-rush-alex.netlify.app](https://pixel-rush-alex.netlify.app/)
-
-Los cambios confirmados en la rama de publicación pueden desplegarse automáticamente mediante la integración de Netlify con GitHub.
-
-## 📁 Estructura
+## Architecture
 
 ```text
 pixel-rush/
-├── index.html        # Interfaz y estructura del juego
-├── styles.css        # Diseño y estilos responsive
-├── index.js          # Jugabilidad, animación, físicas y controles
-├── favicon.svg       # Identidad visual
-├── docs/
-│   └── preview.webp  # Captura utilizada en este README
-└── README.md         # Documentación
+├── index.html              # Game shell, HUD, menus and accessibility markup
+├── styles.css              # Responsive art direction and UI states
+├── index.js                # State machine, simulation, renderer, input and audio
+├── game-core.js            # Pure scoring, collision and difficulty rules
+├── tests/
+│   └── game-core.test.js   # Dependency-free rule tests
+├── favicon.svg             # Original project mark
+├── img/                    # Legacy assets retained for project history
+├── audio/                  # Legacy audio retained for project history
+└── README.md
 ```
 
-> Si todavía aparecen las carpetas `img/` y `audio/` de una versión anterior, no son necesarias para el juego actual y pueden retirarse después de confirmar que ningún archivo las utiliza.
+The active game draws its character, scenery, hazards and effects directly in Canvas. Audio feedback is synthesized through Web Audio after user interaction. The legacy media folders are not required by the current runtime and remain untouched for historical reference.
 
-## 🧠 Aspectos técnicos destacados
+## Run locally
 
-- **Game loop** con `requestAnimationFrame` y actualización basada en tiempo transcurrido (*delta time*).
-- **Colisiones AABB** mediante cajas rectangulares.
-- **Generación dinámica** de obstáculos, monedas, escudos y partículas.
-- **Ajuste responsive del Canvas** para distintos tamaños de pantalla.
-- **Progresión de dificultad** con velocidad creciente.
-- **Persistencia local** de mejores puntuaciones y preferencia de sonido.
+No installation or build step is required. Start the included dependency-free static server:
 
-## 🛠️ Próximas ideas
+```bash
+npm start
+```
 
-- [ ] Nuevos escenarios, obstáculos y potenciadores.
-- [ ] Logros y desafíos especiales.
-- [ ] Personalización del personaje.
-- [ ] Ranking online opcional con backend.
+Then open `http://localhost:8080`. Opening `index.html` directly also works in modern browsers, although an HTTP server provides a more production-like environment.
 
-*Estas funciones son propuestas para futuras versiones y todavía no están implementadas.*
+## Validation
 
----
+```bash
+npm test
+npm run check
+```
 
-<div align="center">
+Browser QA should cover starting, jumping, sliding, collecting, taking damage, pausing, retrying, returning to the menu, changing settings and reloading persisted progress.
 
-**Desarrollado por [Alexander Lemos](https://github.com/alexlemos2217)**  
-Proyecto personal de desarrollo web y videojuegos.
+## Deployment
 
-<sub>La práctica original se inspiró en material educativo de Manual do Dev. Esta versión presenta una identidad visual y una implementación propias.</sub>
+### Netlify
 
-<br />
+- Build command: leave empty.
+- Publish directory: repository root (`.`).
+- No environment variables are required.
 
-**[⚡ JUGAR PIXEL RUSH](https://pixel-rush-alex.netlify.app/)**
+### GitHub Pages
 
-</div>
+Publish the repository root from the default branch, or use a static Pages workflow. All runtime URLs are relative, so no base-path configuration is required.
+
+Deployment is intentionally not automated by this repository.
+
+## Asset and technology credits
+
+The active visual assets are original Canvas/CSS shapes and the active sound effects are generated at runtime with Web Audio. No commercial music, remote fonts or unlicensed third-party game assets are used by the current build.
+
+The files under `img/` and `audio/` belong to earlier project iterations and are not loaded by the remaster.
+
+## Author
+
+Designed and developed by [Alexander Lemos](https://github.com/alexlemos2217).
+
+Pixel Rush began as a browser game exercise and evolved into an original portfolio arcade experience through a complete visual and engineering rewrite.

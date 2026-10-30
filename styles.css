@@ -4,3 +4,34 @@
 @media (max-width:630px){.site-layout{padding:0 15px}.topbar{height:77px}.brand{font-size:17px}.brand-icon{width:40px;height:40px}.edition{display:none}.topbar-right{gap:0}.repo-link{padding:11px 10px;font-size:9px}.repo-link span{margin-left:2px}.intro{padding:35px 0 27px}.intro h1{font-size:clamp(33px,8vw,52px);letter-spacing:-1.9px}.intro-desc{font-size:12px;line-height:1.6}.eyebrow{font-size:8px;gap:8px;letter-spacing:.45px;margin-bottom:16px}.eyebrow-line{width:13px}.hero-sticker{display:none}.card-header{height:51px;padding:0 11px}.header-title{gap:6px;font-size:10px;letter-spacing:.4px}.header-icon{font-size:15px}.live-status{font-size:8px}.live-dot{width:5px;height:5px;margin-right:4px}.game-hud{grid-template-columns:1.2fr .9fr 1fr .9fr}.hud-box{padding:11px 7px}.hud-label{font-size:8px;letter-spacing:.1px;margin-bottom:6px}.hud-box strong{font-size:16px}.hud-box strong.lives{font-size:14px;letter-spacing:0}.coin-mini{width:15px;height:15px;font-size:9px;border-width:1px}.canvas-wrap{aspect-ratio:1.45;min-height:245px}.canvas-wrap canvas{height:100%}.overlay{padding:7px}.overlay-card{padding:13px 11px 12px;border-radius:11px;max-width:270px}.overlay-chip{font-size:7px;letter-spacing:.7px}.overlay-mark{font-size:20px;margin-top:2px}.overlay h2{font-size:21px;letter-spacing:-.5px;margin:4px 0 6px}.overlay p{font-size:10px;line-height:1.3;margin-bottom:10px}.overlay-actions{gap:5px}.button{min-height:34px;padding:0 9px;gap:6px;font-size:8px}.button-arrow{font-size:13px}.button-quiet span{font-size:12px}.overlay .overlay-hint{font-size:7px;letter-spacing:0;margin-top:10px}.game-toolbar{flex-direction:column;gap:11px;padding:13px}.toolbar-controls{width:100%}.toolbar-message{display:block;font-size:8px}.touch-actions{display:flex;width:100%}.action-button{flex:1}.desktop-tip{display:none}.touch-hint{display:block}.sidebar{gap:10px}.panel{padding:13px}.panel-heading{font-size:9px}.panel-heading-sub{font-size:7px}.best-value{font-size:29px;margin:14px 0}.best-footer{font-size:8px;align-items:flex-start;gap:5px}.badge-mini{font-size:7px;padding:5px}.mode-option{padding:8px}.mode-option strong{font-size:10px}.mode-option small{font-size:8px;line-height:1.2}.progress-text{margin-top:14px}.progress-text strong{font-size:9px}.progress-foot{font-size:8px}.rank-list{min-height:28px}.rank-note{font-size:8px}.bottom-strip{margin-top:45px;padding-bottom:36px}.instruction-grid{gap:8px}.instruction{padding-top:15px}.instruction-icon{font-size:24px;margin:12px 0}.instruction h3{font-size:10px}.instruction p{font-size:9px;line-height:1.55}.site-layout footer{font-size:8px;line-height:1.5;flex-wrap:wrap;padding:20px 0}}
 @media (max-width:390px){.header-sub,.header-separator{display:none}.sidebar{grid-template-columns:1fr}.best-value{font-size:40px}.intro h1{font-size:32px}.panel-heading{font-size:10px}.game-hud .hud-label{font-size:7px}.game-hud .hud-box strong{font-size:14px}.game-hud .hud-box strong.lives{font-size:13px}.instruction-grid{grid-template-columns:1fr}.instruction{display:grid;grid-template-columns:55px 1fr;column-gap:10px}.instruction-no{grid-column:1/-1}.instruction-icon{grid-column:1;margin:10px}.instruction>div{grid-column:2;grid-row:2}.bottom-head h2{font-size:21px}}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important}}
+
+/* Ultimate Remaster: progression, settings and high-skill feedback. */
+.game-hud{grid-template-columns:1.2fr .85fr .8fr 1fr .85fr}
+.combo-value{color:#a9fbff;transition:color .2s,filter .2s,transform .2s}
+.combo-value.is-hot{color:#d0ff65;filter:drop-shadow(0 0 7px #b9ff4c88);transform:scale(1.08)}
+.overlay-card{max-height:calc(100% - 18px);overflow:auto;scrollbar-width:thin}
+.overlay-actions{flex-wrap:wrap}
+.overlay-detail{width:min(100%,460px);margin:12px auto 2px;text-align:left}
+.progress-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.progress-summary span{padding:8px;border:1px solid #8fefff26;border-radius:7px;background:#07152caa;color:#94a9c8;font:700 8px/1.2 var(--mono);text-align:center;text-transform:uppercase}
+.progress-summary b{display:block;color:#eaf3ff;font-size:14px;margin-bottom:3px}
+.achievement-list{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:7px}
+.achievement{display:flex;flex-direction:column;padding:8px 10px;border:1px solid #8ba0c31f;border-radius:7px;background:#07101fb0;opacity:.5}
+.achievement.is-unlocked{opacity:1;border-color:#d0ff6540;background:#16233acc}
+.achievement strong{color:#d9e7ff;font:800 9px/1.2 var(--mono);text-transform:uppercase}
+.achievement.is-unlocked strong{color:#d0ff65}
+.achievement small{color:#8fa3c1;font:500 8px/1.35 var(--sans);margin-top:3px}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin-top:12px;background:var(--border);border:1px solid var(--border)}
+.stats-grid>div{background:#101b31;padding:11px;display:flex;flex-direction:column}
+.stats-grid strong{font-size:18px;color:var(--white)}
+.stats-grid span{font:700 7px/1.3 var(--mono);letter-spacing:.8px;color:var(--muted);margin-top:4px}
+.setting-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);cursor:pointer}
+.setting-row:last-child{border-bottom:0}
+.setting-row span{display:flex;flex-direction:column}
+.setting-row strong{font:800 9px/1.3 var(--mono);letter-spacing:.5px}
+.setting-row small{font:500 8px/1.4 var(--sans);color:var(--muted);margin-top:3px}
+.setting-row input[type=range]{width:90px;accent-color:#52e5ff}
+.setting-row input[type=checkbox]{width:19px;height:19px;accent-color:#328dff}
+.button:focus-visible,.control-button:focus-visible,.action-button:focus-visible,.mode-option:focus-visible,input:focus-visible{outline:3px solid #52e5ff;outline-offset:3px}
+@media(max-width:630px){body{overflow-x:hidden}.game-hud{grid-template-columns:repeat(5,minmax(0,1fr));width:100%}.game-hud .hud-box{padding-inline:4px;overflow:hidden}.game-hud .hud-box strong{min-width:0}.game-hud .coin-stat{gap:3px}.achievement-list{grid-template-columns:1fr}.overlay-detail{margin-top:6px}.progress-summary span{font-size:6px;padding:5px}.progress-summary b{font-size:11px}.stats-panel,.settings-panel{grid-column:1/-1}}
+@media(max-width:420px){.game-hud .hud-label{letter-spacing:0}.game-hud .hud-box strong{font-size:11px;letter-spacing:0}.game-hud .hud-box strong.lives{font-size:10px;letter-spacing:0}.game-hud .coin-mini{width:12px;height:12px;font-size:7px}.overlay-actions .button{min-height:31px;padding-inline:7px}}

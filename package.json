@@ -1,0 +1,12 @@
+{
+  "name": "pixel-rush-ultimate-remaster",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Original dependency-free Canvas arcade runner.",
+  "scripts": {
+    "start": "node tools/serve.js",
+    "check": "node --check game-core.js && node --check index.js && node --check tools/serve.js && node --check tests/browser-smoke.js",
+    "test": "node tests/game-core.test.js",
+    "test:browser": "node tests/browser-smoke.js"
+  }
+}

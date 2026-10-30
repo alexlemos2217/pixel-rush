@@ -7,6 +7,7 @@
   'use strict';
 
   const canvas = document.getElementById('game');
+  const Core = window.PixelRushCore;
   const ctx = canvas.getContext('2d');
   if (!ctx) {
     document.getElementById('overlay-title').textContent = 'CANVAS NO DISPONIBLE';
@@ -38,19 +39,36 @@
     overlay: $('overlay'), title: $('overlay-title'), description: $('overlay-description'),
     chip: $('overlay-chip'), primary: $('primary-action'), primaryText: $('primary-text'),
     secondary: $('secondary-action'), hint: $('overlay-hint'), status: $('game-status'),
-    score: $('score'), coins: $('coins'), lives: $('lives'), speed: $('speed'),
+    score: $('score'), coins: $('coins'), combo: $('combo'), lives: $('lives'), speed: $('speed'),
     best: $('best-score'), ranking: $('rank-list'), district: $('district-name'),
     districtLabel: $('district-label'), progress: $('progress-fill'),
     percent: $('progress-percent'), sound: $('sound-button'), soundIcon: $('sound-icon'),
-    pause: $('pause-button'), pauseIcon: $('pause-icon'), message: $('toolbar-label')
+    pause: $('pause-button'), pauseIcon: $('pause-icon'), message: $('toolbar-label'),
+    tertiary: $('tertiary-action'), detail: $('overlay-detail'), volume: $('volume-control'),
+    effects: $('effects-control'), statRuns: $('stat-runs'), statDistance: $('stat-distance'),
+    statCoins: $('stat-coins'), statCombo: $('stat-combo')
   };
 
-  const storageKey = 'alexlemos_pixel_rush_v1';
+  const storageKey = 'alexlemos_pixel_rush_v2';
+  const legacyStorageKey = 'alexlemos_pixel_rush_v1';
+  const defaultSave = () => ({
+    version: 2, best: 0, scores: [], muted: false, volume: .65, reducedFx: false,
+    stats: { runs: 0, distance: 0, coins: 0, playTime: 0, bestCombo: 1 }, achievements: []
+  });
   function loadSave() {
     try {
-      const value = JSON.parse(localStorage.getItem(storageKey) || '{}');
-      return { best: Number(value.best) || 0, scores: Array.isArray(value.scores) ? value.scores.filter(s => Number.isFinite(s.score)).slice(0, 10) : [], muted: !!value.muted };
-    } catch (_) { return { best: 0, scores: [], muted: false }; }
+      const raw = localStorage.getItem(storageKey) || localStorage.getItem(legacyStorageKey) || '{}';
+      const value = JSON.parse(raw);
+      const base = defaultSave();
+      return {
+        ...base, ...value, version: 2,
+        best: Math.max(0, Number(value.best) || 0),
+        scores: Array.isArray(value.scores) ? value.scores.filter(s => Number.isFinite(s.score)).slice(0, 10) : [],
+        volume: Math.max(0, Math.min(1, Number(value.volume ?? .65))),
+        stats: { ...base.stats, ...(value.stats || {}) },
+        achievements: Array.isArray(value.achievements) ? value.achievements.filter(a => typeof a === 'string') : []
+      };
+    } catch (_) { return defaultSave(); }
   }
   const saved = loadSave();
   function saveProgress() {
@@ -73,6 +91,13 @@
   let shield = 0;
   let shake = 0;
   let score = 0;
+  let combo = 0;
+  let comboTimer = 0;
+  let bestRunCombo = 1;
+  let coyoteTimer = 0;
+  let jumpBuffer = 0;
+  let accumulator = 0;
+  let runNewRecord = false;
   let obstacles = [];
   let pickups = [];
   let particles = [];
@@ -82,11 +107,12 @@
   let slideHeld = false;
   let jumpHeld = false;
   let lastHudKey = '';
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const systemReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduceMotionActive = () => systemReduceMotion || saved.reducedFx;
 
   const player = { x: 165, y: FLOOR - 75, w: 56, h: 75, vy: 0, jumps: 0, slide: 0, grounded: true };
   const rand = (min, max) => min + Math.random() * (max - min);
-  const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+  const clamp = Core.clamp;
   const pad = (v, len) => String(v).padStart(len, '0');
   const districtIndex = () => Math.floor(distance / LEVEL_LENGTH);
   const currentSpeed = () => Math.min(MODES[mode].maxSpeed, MODES[mode].speed + elapsed * MODES[mode].acceleration);
@@ -116,7 +142,7 @@
       oscillator.frequency.setValueAtTime(Math.max(40, freq), t);
       oscillator.frequency.exponentialRampToValueAtTime(Math.max(40, endFreq), t + duration);
       gain.gain.setValueAtTime(.0001, t);
-      gain.gain.exponentialRampToValueAtTime(volume, t + .012);
+      gain.gain.exponentialRampToValueAtTime(Math.max(.0001, volume * saved.volume), t + .012);
       gain.gain.exponentialRampToValueAtTime(.0001, t + duration);
       oscillator.connect(gain).connect(soundContext.destination);
       oscillator.start(t);
@@ -131,10 +157,14 @@
     if (name === 'hit') { tone(190, 65, .32, 'sawtooth', .045); }
     if (name === 'end') { [330, 250, 180].forEach((f, i) => tone(f, f * .76, .3, 'triangle', .045, i * .19)); }
     if (name === 'start') { [440, 660, 880].forEach((f, i) => tone(f, f * 1.05, .11, 'sine', .042, i * .09)); }
+    if (name === 'combo') { tone(860, 1280, .12, 'triangle', .045); }
+    if (name === 'record') { [660, 880, 1100, 1320].forEach((f, i) => tone(f, f * 1.04, .16, 'sine', .045, i * .08)); }
+    if (name === 'achievement') { tone(520, 1040, .25, 'triangle', .05); tone(780, 1560, .3, 'sine', .035, .12); }
   }
 
   function resetGame() {
     elapsed = 0; distance = 0; coinsCount = 0; bonusPoints = 0; score = 0;
+    combo = 0; comboTimer = 0; bestRunCombo = 1; coyoteTimer = 0; jumpBuffer = 0; accumulator = 0; runNewRecord = false;
     hearts = MODES[mode].hearts; spawnTimer = 1.35; coinTimer = 1.5; shieldTimer = 13;
     obstacles = []; pickups = []; particles = []; floatTexts = [];
     invulnerable = 0; shield = 0; shake = 0; slideHeld = false;
@@ -152,10 +182,11 @@
     } else {
       ui.overlay.classList.remove('is-hidden');
       const overlays = {
-        ready: ['✦  BIENVENIDO A NEON CITY', '¿LISTO PARA<br><em>LA CARRERA?</em>', 'Saltá, esquivá y sumá monedas.<br>La velocidad aumenta mientras jugás.', 'INICIAR PARTIDA', 'CÓMO JUGAR', 'ENTER O ESPACIO PARA EMPEZAR'],
-        paused: ['Ⅱ  PARTIDA EN PAUSA', 'HACEMOS<br><em>UN RESPIRO.</em>', 'Tu progreso está a salvo.<br>Cuando quieras, seguí corriendo.', 'CONTINUAR', 'REINICIAR', 'P O ESC PARA CONTINUAR'],
-        over: ['✦  FIN DE LA PARTIDA', 'OTRA VUELTA,<br><em>OTRO RÉCORD.</em>', `Sumaste <strong>${score.toLocaleString('es-UY')}</strong> puntos y <strong>${coinsCount}</strong> monedas.<br>¿Podés superar tu marca?`, 'VOLVER A JUGAR', 'VER CONTROLES', 'ENTER PARA REINTENTAR'],
-        help: ['◈  CONTROLES', 'CADA SALTO<br><em>CUENTA.</em>', 'ESPACIO o ↑: salto (dos veces).<br>↓ o S: deslizarte bajo drones.<br>P o ESC: pausar. Tocá para saltar.', 'ENTENDIDO', '', 'JUGÁ EN PC, TABLET O CELULAR']
+        ready: ['✦  BIENVENIDO A NEON CITY', '¿LISTO PARA<br><em>LA CARRERA?</em>', 'Encadená monedas y esquives para subir el combo.<br>La ciudad acelera mientras jugás.', 'INICIAR PARTIDA', 'CÓMO JUGAR', 'PROGRESO', 'ENTER O ESPACIO PARA EMPEZAR'],
+        paused: ['Ⅱ  PARTIDA EN PAUSA', 'HACEMOS<br><em>UN RESPIRO.</em>', 'La simulación está detenida.<br>Tu progreso está a salvo.', 'CONTINUAR', 'REINICIAR', 'MENÚ PRINCIPAL', 'P O ESC PARA CONTINUAR'],
+        over: [runNewRecord ? '★  NUEVO RÉCORD' : '✦  FIN DE LA PARTIDA', runNewRecord ? 'NUEVA MARCA,<br><em>NUEVO OBJETIVO.</em>' : 'OTRA VUELTA,<br><em>OTRO RÉCORD.</em>', `<strong>${score.toLocaleString('es-UY')}</strong> puntos · ${Math.floor(distance / 10)} m · ${coinsCount} monedas<br>Mejor combo: <strong>×${bestRunCombo}</strong>`, 'VOLVER A JUGAR', 'MENÚ PRINCIPAL', 'PROGRESO', 'ENTER PARA REINTENTAR'],
+        help: ['◈  CONTROLES', 'CADA SALTO<br><em>CUENTA.</em>', 'ESPACIO o ↑: salto y doble salto.<br>↓ o S: deslizarte. P o ESC: pausa.<br>Monedas y esquives mantienen el combo.', 'ENTENDIDO', '', '', 'TECLADO, TÁCTIL O MOUSE'],
+        progress: ['◎  PROGRESO LOCAL', 'TU HISTORIA<br><em>EN NEON CITY.</em>', '', 'VOLVER', '', '', 'GUARDADO EN ESTE NAVEGADOR']
       };
       const config = overlays[type];
       ui.chip.textContent = config[0];
@@ -164,49 +195,92 @@
       ui.primaryText.textContent = config[3];
       ui.secondary.firstChild.textContent = config[4] + ' ';
       ui.secondary.hidden = !config[4];
-      ui.hint.textContent = config[5];
-      ui.status.textContent = { ready: 'LISTO PARA JUGAR', paused: 'EN PAUSA', over: 'PARTIDA TERMINADA', help: 'INSTRUCCIONES' }[type];
+      ui.tertiary.firstChild.textContent = config[5] + ' ';
+      ui.tertiary.hidden = !config[5];
+      ui.hint.textContent = config[6];
+      ui.detail.hidden = type !== 'progress';
+      if (type === 'progress') renderProgressDetail();
+      ui.status.textContent = { ready: 'LISTO PARA JUGAR', paused: 'EN PAUSA', over: 'PARTIDA TERMINADA', help: 'INSTRUCCIONES', progress: 'PROGRESO LOCAL' }[type];
       ui.pauseIcon.textContent = type === 'paused' ? '▶' : 'Ⅱ';
     }
     document.querySelectorAll('[data-mode]').forEach(b => { b.disabled = type === 'playing' || type === 'paused'; });
-    ui.pause.disabled = type === 'ready' || type === 'over' || type === 'help';
-    ui.message.textContent = { ready: 'UNA PARTIDA MÁS. SIEMPRE.', playing: 'SEGUÍ CORRIENDO.', paused: 'TOMÁ TU TIEMPO.', over: '¿VAMOS POR LA REVANCHA?', help: 'APRENDÉ LOS MOVIMIENTOS.' }[type];
+    ui.pause.disabled = type === 'ready' || type === 'over' || type === 'help' || type === 'progress';
+    ui.message.textContent = { ready: 'UNA PARTIDA MÁS. SIEMPRE.', playing: 'SEGUÍ CORRIENDO.', paused: 'TOMÁ TU TIEMPO.', over: '¿VAMOS POR LA REVANCHA?', help: 'APRENDÉ LOS MOVIMIENTOS.', progress: 'TU CAMINO QUEDA GUARDADO.' }[type];
   }
 
   function startGame() { resetGame(); setOverlay('playing'); lastFrame = performance.now(); playSound('start'); canvas.focus({ preventScroll: true }); }
   function resumeGame() { setOverlay('playing'); lastFrame = performance.now(); canvas.focus({ preventScroll: true }); }
   function pauseGame() { if (phase === 'playing') { setOverlay('paused'); slideHeld = false; } else if (phase === 'paused') resumeGame(); }
+  const ACHIEVEMENTS = [
+    { id: 'first-run', icon: '▶', title: 'Primer impulso', text: 'Completá tu primera partida.', check: () => saved.stats.runs >= 1 },
+    { id: 'coin-hunter', icon: '✦', title: 'Cazador de luz', text: 'Recolectá 50 monedas en total.', check: () => saved.stats.coins >= 50 },
+    { id: 'combo-5', icon: '×5', title: 'En la zona', text: 'Alcanzá un combo de ×5.', check: () => saved.stats.bestCombo >= 5 },
+    { id: 'distance-5k', icon: '→', title: 'Sin mirar atrás', text: 'Recorré 5.000 metros acumulados.', check: () => saved.stats.distance >= 5000 },
+    { id: 'score-5k', icon: '★', title: 'Señal intensa', text: 'Superá 5.000 puntos en una partida.', check: () => saved.best >= 5000 }
+  ];
+  function unlockAchievements() {
+    ACHIEVEMENTS.forEach(item => {
+      if (!saved.achievements.includes(item.id) && item.check()) {
+        saved.achievements.push(item.id);
+        floating(viewWidth / 2, 105, 'LOGRO: ' + item.title.toUpperCase(), '#d0ff65');
+        playSound('achievement');
+      }
+    });
+  }
+  function renderProgressDetail() {
+    const unlocked = new Set(saved.achievements);
+    ui.detail.innerHTML = `<div class="progress-summary"><span><b>${saved.stats.runs}</b> partidas</span><span><b>${Math.floor(saved.stats.distance)}</b> m</span><span><b>${saved.stats.coins}</b> monedas</span></div><div class="achievement-list">${ACHIEVEMENTS.map(a => `<div class="achievement ${unlocked.has(a.id) ? 'is-unlocked' : ''}"><strong>${a.icon} ${a.title}</strong><small>${a.text}</small></div>`).join('')}</div>`;
+  }
+  function syncCareer() {
+    ui.statRuns.textContent = saved.stats.runs;
+    ui.statDistance.textContent = Math.floor(saved.stats.distance);
+    ui.statCoins.textContent = saved.stats.coins;
+    ui.statCombo.textContent = '×' + saved.stats.bestCombo;
+  }
   function endGame() {
     if (phase !== 'playing') return;
     playSound('end');
-    if (score > saved.best) saved.best = score;
-    saved.scores.push({ score, mode: MODES[mode].name });
+    runNewRecord = score > saved.best;
+    if (runNewRecord) { saved.best = score; setTimeout(() => playSound('record'), 420); }
+    saved.stats.runs++;
+    saved.stats.distance += Math.floor(distance / 10);
+    saved.stats.coins += coinsCount;
+    saved.stats.playTime += Math.floor(elapsed);
+    saved.stats.bestCombo = Math.max(saved.stats.bestCombo, bestRunCombo);
+    saved.scores.push({ score, mode: MODES[mode].name, distance: Math.floor(distance / 10), combo: bestRunCombo });
     saved.scores.sort((a, b) => b.score - a.score);
     saved.scores = saved.scores.slice(0, 10);
+    unlockAchievements();
     saveProgress();
     renderRanking();
+    syncCareer();
     syncHud(true);
     setOverlay('over');
   }
 
-  function jump() {
-    if (phase === 'ready' || phase === 'over') return startGame();
-    if (phase !== 'playing') return;
-    if (player.jumps >= 2) return;
+  function executeJump() {
+    const canFirstJump = player.grounded || coyoteTimer > 0;
+    if (!canFirstJump && player.jumps >= 2) return false;
+    if (canFirstJump) player.jumps = 0;
     if (player.grounded && player.slide > 0) { player.slide = 0; player.h = 75; player.y = FLOOR - 75; }
     player.vy = player.jumps === 0 ? JUMP_POWER : -720;
     player.grounded = false;
+    coyoteTimer = 0;
     player.jumps++;
     burst(player.x + 28, player.y + player.h, '#a9fbff', 8, 160);
     playSound(player.jumps === 1 ? 'jump' : 'double');
+    return true;
+  }
+  function jump() {
+    if (phase === 'ready' || phase === 'over') return startGame();
+    if (phase !== 'playing') return;
+    if (!executeJump()) jumpBuffer = .12;
   }
   function slide() {
     if (phase === 'playing' && player.grounded) { player.slide = .65; playSound('jump'); }
   }
 
-  function rectsOverlap(a, b, margin = 0) {
-    return a.x + margin < b.x + b.w && a.x + a.w - margin > b.x && a.y + margin < b.y + b.h && a.y + a.h - margin > b.y;
-  }
+  const rectsOverlap = Core.rectsOverlap;
   function playerHitbox() { return { x: player.x + 11, y: player.y + 7, w: player.w - 18, h: player.h - 12 }; }
   function playerCollectBox() { return { x: player.x - 3, y: player.y - 7, w: player.w + 6, h: player.h + 14 }; }
 
@@ -234,7 +308,7 @@
     }
   }
   function burst(x, y, color, count, energy = 170) {
-    if (reduceMotion) return;
+    if (reduceMotionActive()) return;
     for (let i = 0; i < count; i++) {
       const angle = rand(-Math.PI, Math.PI);
       const velocity = rand(energy * .25, energy);
@@ -246,11 +320,14 @@
   function syncHud(force = false) {
     const currentDistrict = districtIndex();
     const progress = distance % LEVEL_LENGTH / LEVEL_LENGTH;
-    const key = [score, coinsCount, hearts, Math.round(currentSpeed() / MODES[mode].speed * 10), currentDistrict, Math.floor(progress * 100), shield > 0 ? 1 : 0].join(':');
+    const multiplier = Core.comboMultiplier(combo);
+    const key = [score, coinsCount, combo, hearts, Math.round(currentSpeed() / MODES[mode].speed * 10), currentDistrict, Math.floor(progress * 100), shield > 0 ? 1 : 0].join(':');
     if (!force && key === lastHudKey) return;
     lastHudKey = key;
     ui.score.textContent = pad(score, 6);
     ui.coins.textContent = pad(coinsCount, 2);
+    ui.combo.textContent = '×' + multiplier;
+    ui.combo.classList.toggle('is-hot', multiplier >= 3);
     ui.lives.textContent = '♥ '.repeat(hearts).trim() + (shield > 0 ? ' ⛨' : '');
     ui.lives.setAttribute('aria-label', hearts + ' vidas' + (shield > 0 ? ' y escudo' : ''));
     ui.speed.textContent = (currentSpeed() / MODES[mode].speed).toFixed(1) + 'x';
@@ -274,6 +351,10 @@
     invulnerable = Math.max(0, invulnerable - dt);
     shield = Math.max(0, shield - dt);
     shake = Math.max(0, shake - dt);
+    coyoteTimer = player.grounded ? .1 : Math.max(0, coyoteTimer - dt);
+    jumpBuffer = Math.max(0, jumpBuffer - dt);
+    comboTimer = Math.max(0, comboTimer - dt);
+    if (comboTimer === 0 && combo > 0) combo = 0;
     player.slide = Math.max(0, player.slide - dt);
     const oldHeight = player.h;
     player.h = player.grounded && (player.slide > 0 || slideHeld) ? 44 : 75;
@@ -287,13 +368,16 @@
       player.vy = 0;
       player.jumps = 0;
       player.grounded = true;
+      if (jumpBuffer > 0) { jumpBuffer = 0; executeJump(); }
     }
 
     spawnTimer -= dt;
     if (spawnTimer <= 0) {
       spawnObstacle();
       const speedFactor = (velocity - MODES[mode].speed) / (MODES[mode].maxSpeed - MODES[mode].speed || 1);
-      spawnTimer = Math.max(.91, MODES[mode].gap - speedFactor * .16) + rand(-.04, .3);
+      const phaseIndex = Math.min(3, Math.floor(elapsed / 28));
+      const restBeat = Math.floor(elapsed) % 24 > 20 ? .48 : 0;
+      spawnTimer = Core.difficultyGap({ baseGap: MODES[mode].gap, speedFactor, phase: phaseIndex, restBeat: restBeat > 0 }) + rand(.03, .28);
     }
     coinTimer -= dt;
     if (coinTimer <= 0) { spawnCoins(); coinTimer = rand(3.2, 5.4); }
@@ -307,7 +391,20 @@
     obstacles.forEach(o => {
       o.x -= velocity * dt;
       o.wobble += dt * 3;
+      if (!o.passed && o.x + o.w < player.x) {
+        o.passed = true;
+        if (!o.hit) {
+          combo++;
+          comboTimer = 2.6;
+          const multiplier = Core.comboMultiplier(combo);
+          bestRunCombo = Math.max(bestRunCombo, multiplier);
+          bonusPoints += 20 * multiplier;
+          if (multiplier > 1) floating(player.x + 55, player.y - 18, `ESQUIVE ×${multiplier}`, '#a9fbff');
+          if (combo === 6 || combo === 12) playSound('combo');
+        }
+      }
       if (invulnerable <= 0 && rectsOverlap(hitbox, { x: o.x, y: o.y, w: o.w, h: o.h }, 5)) {
+        o.hit = true;
         if (shield > 0) {
           shield = 0;
           invulnerable = .75;
@@ -316,6 +413,8 @@
           playSound('shield');
         } else {
           hearts--;
+          combo = 0;
+          comboTimer = 0;
           invulnerable = 1.25;
           shake = .25;
           burst(player.x + 30, player.y + 35, '#ff7199', 19, 240);
@@ -334,8 +433,14 @@
         burst(item.x, item.y, item.kind === 'coin' ? '#ffd575' : '#81ecff', 10, 150);
         if (item.kind === 'coin') {
           coinsCount++;
-          bonusPoints += MODES[mode].coinBonus;
-          floating(item.x, item.y - 15, '+' + MODES[mode].coinBonus, '#ffdf8c');
+          combo++;
+          comboTimer = 2.6;
+          const multiplier = Core.comboMultiplier(combo);
+          bestRunCombo = Math.max(bestRunCombo, multiplier);
+          const award = Core.coinAward(MODES[mode].coinBonus, combo);
+          bonusPoints += award;
+          floating(item.x, item.y - 15, `+${award}${multiplier > 1 ? ` ×${multiplier}` : ''}`, '#ffdf8c');
+          if (combo === 6 || combo === 12) playSound('combo');
           playSound('coin');
         } else {
           shield = 8;
@@ -521,7 +626,7 @@
 
   function draw() {
     ctx.save();
-    if (shake > 0 && !reduceMotion) ctx.translate(rand(-6,6)*shake/.25,rand(-4,4)*shake/.25);
+    if (shake > 0 && !reduceMotionActive()) ctx.translate(rand(-6,6)*shake/.25,rand(-4,4)*shake/.25);
     sky();
     pickups.forEach(item => item.kind === 'coin' ? drawCoin(item) : drawShield(item));
     obstacles.forEach(o => { if(o.kind==='crate')drawCrate(o);else if(o.kind==='spikes')drawSpikes(o);else drawDrone(o); });
@@ -539,10 +644,14 @@
   }
   function frame(now) {
     if (!lastFrame) lastFrame = now;
-    const dt = clamp((now - lastFrame) / 1000, 0, .033);
+    const dt = clamp((now - lastFrame) / 1000, 0, .05);
     lastFrame = now;
     frameTime += dt;
-    if (phase === 'playing') update(dt);
+    if (phase === 'playing') {
+      accumulator = Math.min(accumulator + dt, .1);
+      const fixedStep = 1 / 120;
+      while (accumulator >= fixedStep) { update(fixedStep); accumulator -= fixedStep; }
+    } else accumulator = 0;
     draw();
     requestAnimationFrame(frame);
   }
@@ -558,6 +667,7 @@
       const index=document.createElement('span');index.className='rank-index';index.textContent='#'+pad(i+1,2);
       const modeLabel=document.createElement('span');modeLabel.className='rank-mode';modeLabel.textContent=String(item.mode).slice(0,15);
       const points=document.createElement('span');points.className='rank-points';points.textContent=pad(item.score,6);
+      if (item.combo) modeLabel.textContent += ' · ×' + item.combo;
       meta.append(index,modeLabel);row.append(meta,points);ui.ranking.append(row);
     });
   }
@@ -574,11 +684,16 @@
   ui.primary.addEventListener('click', () => {
     if (phase === 'ready' || phase === 'over') startGame();
     else if (phase === 'paused') resumeGame();
-    else if (phase === 'help') setOverlay('ready');
+    else if (phase === 'help' || phase === 'progress') setOverlay('ready');
   });
   ui.secondary.addEventListener('click', () => {
-    if (phase === 'ready' || phase === 'over') setOverlay('help');
+    if (phase === 'ready') setOverlay('help');
+    else if (phase === 'over') setOverlay('ready');
     else if (phase === 'paused') startGame();
+  });
+  ui.tertiary.addEventListener('click', () => {
+    if (phase === 'ready' || phase === 'over') setOverlay('progress');
+    else if (phase === 'paused') { resetGame(); setOverlay('ready'); }
   });
   $('jump-button').addEventListener('click', jump);
   $('slide-button').addEventListener('pointerdown', ev => { ev.preventDefault();slideHeld=true;slide(); });
@@ -589,10 +704,16 @@
   ui.pause.addEventListener('click',pauseGame);
   $('reset-button').addEventListener('click',startGame);
   ui.sound.addEventListener('click',() => {
-    saved.muted=!saved.muted;saveProgress();syncSound();
+    saved.muted=!saved.muted;
+    if (!saved.muted && saved.volume === 0) { saved.volume = .65; ui.volume.value = 65; }
+    saveProgress();syncSound();
     if(!saved.muted)tone(680,900,.12);
   });
   function syncSound(){ui.soundIcon.textContent=saved.muted?'♩̸':'♫';ui.sound.setAttribute('aria-pressed',String(saved.muted));ui.sound.setAttribute('aria-label', saved.muted?'Activar sonidos':'Silenciar sonidos');}
+  ui.volume.value = Math.round(saved.volume * 100);
+  ui.effects.checked = saved.reducedFx;
+  ui.volume.addEventListener('input', () => { saved.volume = Number(ui.volume.value) / 100; saved.muted = saved.volume === 0; saveProgress(); syncSound(); });
+  ui.effects.addEventListener('change', () => { saved.reducedFx = ui.effects.checked; saveProgress(); });
   document.querySelectorAll('[data-mode]').forEach(b => b.addEventListener('click',() => setMode(b.dataset.mode)));
   canvas.addEventListener('pointerdown',ev => { ev.preventDefault();if (phase==='playing')jump(); });
   document.addEventListener('keydown', ev => {
@@ -601,7 +722,7 @@
     if (ev.code === 'Space' || ev.code === 'ArrowUp' || ev.code === 'KeyW') {
       if (tag === 'BUTTON' && ev.code === 'Space') return; // Accesibilidad: botón activo usa su propia acción.
       ev.preventDefault();
-      if (!ev.repeat) jump();
+      if (!ev.repeat) { jumpHeld = true; jump(); }
     } else if (ev.code === 'ArrowDown' || ev.code === 'KeyS') {
       ev.preventDefault();slideHeld=true;if(!ev.repeat)slide();
     } else if (ev.code === 'KeyP' || ev.code === 'Escape') {
@@ -611,12 +732,19 @@
       if (phase==='ready'||phase==='over')startGame();
       else if (phase==='paused')resumeGame();
       else if (phase==='help')setOverlay('ready');
-    } else if(ev.code==='KeyM'){saved.muted=!saved.muted;saveProgress();syncSound();}
+    } else if(ev.code==='KeyM'){
+      saved.muted=!saved.muted;
+      if (!saved.muted && saved.volume === 0) { saved.volume = .65; ui.volume.value = 65; }
+      saveProgress();syncSound();
+    }
   });
-  document.addEventListener('keyup',ev => {if(ev.code==='ArrowDown'||ev.code==='KeyS')slideHeld=false;});
+  document.addEventListener('keyup',ev => {
+    if(ev.code==='ArrowDown'||ev.code==='KeyS')slideHeld=false;
+    if(ev.code==='Space'||ev.code==='ArrowUp'||ev.code==='KeyW') { jumpHeld=false; if(player.vy < -250) player.vy *= .58; }
+  });
   document.addEventListener('visibilitychange',() => {if(document.hidden&&phase==='playing')setOverlay('paused');});
   window.addEventListener('blur',() => {if(phase==='playing')setOverlay('paused');});
   window.addEventListener('resize',resize);
 
-  renderRanking();syncSound();resetGame();setOverlay('ready');resize();requestAnimationFrame(frame);
+  renderRanking();syncSound();syncCareer();resetGame();setOverlay('ready');resize();requestAnimationFrame(frame);
 })();
